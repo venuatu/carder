@@ -1,9 +1,13 @@
 package me.venuatu.carder
 
+import java.nio.charset.Charset
+
 import android.app.Activity
 import android.content.Intent
 import android.graphics.{Point, Paint}
 import android.net.Uri
+import android.nfc.{NdefRecord, NdefMessage, NfcEvent, NfcAdapter}
+import android.nfc.NfcAdapter.CreateNdefMessageCallback
 import android.os.{Build, Bundle}
 import android.text.util.Linkify
 import android.view.{Gravity, View}
@@ -101,8 +105,38 @@ class MainActivity extends Activity with Contexts[Activity] {
       }
 
     setContentView(getUi(view))
+
+    val nfc = NfcAdapter.getDefaultAdapter(getApplicationContext)
+    if (nfc != null) {
+      nfc.setNdefPushMessage(ndefMessage, this)
+      nfc.setNdefPushMessageCallback(new CreateNdefMessageCallback {
+        override def createNdefMessage(nfcEvent: NfcEvent): NdefMessage = {
+          println("ndef push callback: ", nfcEvent)
+          ndefMessage
+        }
+      }, this)
+    }
   }
 
+  lazy val ndefMessage = {
+    val data = s"""BEGIN:VCARD
+                  |VERSION:2.1
+                  |N:${getResources.getString(R.string.name)}
+                  |FN:${getResources.getString(R.string.name)}
+                  |TITLE:${getResources.getString(R.string.title)}
+                  |PHOTO;JPEG:${getResources.getString(R.string.photo_location)}
+                  |TEL;HOME;VOICE:${getResources.getString(R.string.phone).replace("0", "+61")}
+                  |EMAIL;PREF;INTERNET:${getResources.getString(R.string.email)}
+                  |URL:https://${getResources.getString(R.string.linkedin)}
+                  |URL:https://twitter.com/${getResources.getString(R.string.twitter).replace("@", "")}
+                  |REV:20080424T195243Z
+                  |END:VCARD""".stripMargin
+
+    println(data)
+    val uriField = data.getBytes(Charset.forName("US-ASCII"))
+
+    new NdefMessage(NdefRecord.createMime("text/vcard", uriField))
+  }
   def autoLink(linkType: Int) =
     Tweak[TextView]{_.setAutoLinkMask(linkType)}
 

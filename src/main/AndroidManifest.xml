@@ -1,11 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.venuatu.carder"
-    android:versionCode="10001"
-    android:versionName="1.0.1">
+    android:versionCode="10002"
+    android:versionName="1.0.2">
 
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="21"/>
+
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+
 
     <application
         android:label="Steven Manuatu"
