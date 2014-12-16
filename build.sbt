@@ -5,7 +5,7 @@ android.Plugin.androidBuild
 
 platformTarget in Android := "android-21"
 
-name := "carder"
+name := "nathanwatersexperience"
 
 scalaVersion := "2.11.1"
 

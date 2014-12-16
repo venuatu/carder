@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="name">Steven Manuatu</string>
-    <string name="title">Web/App Developer</string>
+    <string name="name">Nathan Waters</string>
+    <string name="title">Entrepreneur, Consultant, Technologist, Futurist, Hackagong &amp; SydEthereum Founder</string>
+    <string name="photo_location">https://venuatu.me/carder/nathan.jpg</string>
 
-    <string name="phone">0498 252 678</string>
-    <string name="email">venuatu@gmail.com</string>
+    <string name="phone">0433 387 440</string>
+    <string name="email">nathan@nathanwaters.com</string>
 
-    <string name="twitter">\@venuatu</string>
-    <string name="github">github.com/venuatu</string>
-    <string name="resume">venuatu.me/resume.pdf</string>
-    <string name="linkedin">au.linkedin.com/pub/steven-manuatu/55/a91/94b/</string>
+    <string name="twitter">\@nathanwaters</string>
+    <string name="linkedin">au.linkedin.com/in/nathanwaters</string>
 
 </resources>

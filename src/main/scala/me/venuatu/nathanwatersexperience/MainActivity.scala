@@ -1,25 +1,33 @@
-package me.venuatu.carder
+package me.venuatu.nathanwatersexperience
+
+import java.nio.charset.Charset
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.{Point, Paint}
+import android.content.pm.PackageManager
+import android.graphics.{Paint, Point}
 import android.net.Uri
+import android.nfc.NfcAdapter.CreateNdefMessageCallback
+import android.nfc.{NfcEvent, NdefMessage, NdefRecord, NfcAdapter}
 import android.os.{Build, Bundle}
-import android.text.util.Linkify
-import android.view.{Gravity, View}
-import android.view.View.OnClickListener
-import android.widget.{ScrollView, ImageView, LinearLayout, TextView}
 import android.support.v7.appcompat.R.style
+import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
-import macroid.contrib.BgTweaks
-
-// import macroid stuff
-import macroid.FullDsl._
+import android.view.{Gravity, View}
+import android.widget.{ImageView, LinearLayout, ScrollView, TextView}
 import macroid._
+import macroid.FullDsl._
+import macroid.contrib._
+
 
 class MainActivity extends Activity with Contexts[Activity] {
 
-  override def onCreate(savedInstanceState: Bundle) = {
+  lazy val hasNfc = {
+    getPackageManager.hasSystemFeature(PackageManager.FEATURE_NFC) &&
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+  }
+
+  override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
 
     val display = getWindowManager.getDefaultDisplay
@@ -60,22 +68,10 @@ class MainActivity extends Activity with Contexts[Activity] {
           <~ link("email")
         ,
 
-        w[TextView] <~ text(R.string.resume)
-          <~ textStyle(style.TextAppearance_AppCompat_Large)
-          <~ textSize(10.dp)
-          <~ link("web")
-        ,
-
         w[TextView] <~ text(R.string.twitter)
           <~ textStyle(style.TextAppearance_AppCompat_Large)
           <~ textSize(10.dp)
           <~ link("twitter")
-        ,
-
-        w[TextView] <~ text(R.string.github)
-          <~ textStyle(style.TextAppearance_AppCompat_Large)
-          <~ textSize(10.dp)
-          <~ link("github")
         ,
 
         w[TextView] <~ text(R.string.linkedin)// <~ autoLink(Linkify.PHONE_NUMBERS)
@@ -101,6 +97,38 @@ class MainActivity extends Activity with Contexts[Activity] {
       }
 
     setContentView(getUi(view))
+
+    val nfc = NfcAdapter.getDefaultAdapter(getApplicationContext)
+    if (nfc != null) {
+      nfc.setNdefPushMessage(ndefMessage, this)
+      nfc.setNdefPushMessageCallback(new CreateNdefMessageCallback {
+        override def createNdefMessage(nfcEvent: NfcEvent): NdefMessage = {
+          println("ndef push callback: ", nfcEvent)
+          ndefMessage
+        }
+      }, this)
+    }
+    println("supports nfc: ", hasNfc)
+  }
+
+  lazy val ndefMessage = {
+    val data = s"""BEGIN:VCARD
+                  |VERSION:2.1
+                  |N:${getResources.getString(R.string.name)}
+                  |FN:${getResources.getString(R.string.name)}
+                  |TITLE:${getResources.getString(R.string.title)}
+                  |PHOTO;JPEG:${getResources.getString(R.string.photo_location)}
+                  |TEL;HOME;VOICE:${getResources.getString(R.string.phone).replace("0", "+61")}
+                  |EMAIL;PREF;INTERNET:${getResources.getString(R.string.email)}
+                  |URL:https://${getResources.getString(R.string.linkedin)}
+                  |URL:https://twitter.com/${getResources.getString(R.string.twitter).replace("@", "")}
+                  |REV:20080424T195243Z
+                  |END:VCARD""".stripMargin
+
+    println(data)
+    val uriField = data.getBytes(Charset.forName("US-ASCII"))
+
+    new NdefMessage(NdefRecord.createMime("text/vcard", uriField))
   }
 
   def autoLink(linkType: Int) =
@@ -119,7 +147,7 @@ class MainActivity extends Activity with Contexts[Activity] {
 
             case "phone" =>
               val intent = new Intent(Intent.ACTION_DIAL)
-              intent.setData(Uri.parse("tel:" + text))
+              intent.setData(Uri.parse("tel:" + text.replaceAll(" ", "")))
               startActivity(intent)
 
             case "email" =>
