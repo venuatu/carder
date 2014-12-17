@@ -82,15 +82,10 @@ class MainActivity extends Activity with Contexts[Activity] {
           <~ link("github")
         ,
 
-        w[TextView] <~ text(R.string.linkedin)// <~ autoLink(Linkify.PHONE_NUMBERS)
+        w[TextView] <~ text(R.string.linkedin)
           <~ textStyle(style.TextAppearance_AppCompat_Large)
           <~ textSize(10.dp)
           <~ link("linkedin")
-
-
-//        ) <~ vertical
-//          <~ padding(all = 4.dp)
-//          <~ lp[LinearLayout](MATCH_PARENT, MATCH_PARENT)
 
       ) <~ lp[LinearLayout](MATCH_PARENT, MATCH_PARENT)
         <~ vertical
