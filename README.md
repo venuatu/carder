@@ -1,10 +1,21 @@
-macroid-starter
-===============
+# Carder
 
-A sample project to start playing with [Macroid](https://github.com/macroid/macroid).
+A simple android app (using Scala and Macroid) to show my contact details and push them over NFC into someone elses contacts app.
 
-* Follow [these instructions](http://macroid.github.io/ScalaOnAndroid.html) to get started with Scala on Android
-* `git clone https://github.com/macroid/macroid-starter && cd macroid-starter`
-* `sbt android:run`
+## Building
 
-*Macroid* documentation: http://macroid.github.io
+~~~~~sh
+
+# get a copy of SBT
+# get the android sdk and set ANDROID_HOME=$THE_DIRECTORY
+# connect an android device/emulator
+sbt android:run
+
+# this works great with SBTs tilde (~) operator to watch for code changes and push a new build
+
+~~~~~
+
+## LICENSE
+
+Code is licensed under UNLICENSE while the images in this repo are all rights reserved
+
